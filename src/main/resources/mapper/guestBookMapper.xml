@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+ <mapper namespace="com.ict.edu3.domain.guestbook.mapper.GuestBookMapper">
+	<select id="getGuestBookList" resultType="GuestBookVO">
+		SELECT * FROM guestbook ORDER BY gb_idx ASC
+	</select>
+	<select id="getGuestBookDetail" resultType="GuestBookVO" parameterType="String">
+		SELECT * FROM guestbook WHERE gb_idx = #{gb_idx}
+	</select>	<delete id="deleteGuestBookDetail" parameterType="String">
+	 DELETE FROM guestbook WHERE gb_idx = #{gb_idx}
+	</delete>
+	<update id="updateGuestBookDetail" parameterType="GuestBookVO">
+	 UPDATE guestbook 
+	 SET gb_subject = #{gb_subject},
+	 		 gb_writer = #{gb_writer},
+			 gb_email = #{gb_email},
+			 gb_content = #{gb_content},
+			 gb_pw = #{gb_pw},
+			 gb_filename = #{gb_filename},
+			 gb_date = NOW(),
+			 gb_id = #{gb_id}
+	 WHERE gb_idx = #{gb_idx}
+	</update>
+
+	<insert id="writeGuestBook" parameterType="GuestBookVO">
+		INSERT INTO guestbook (gb_writer, gb_subject, gb_pw, gb_content, gb_email, gb_filename, gb_date, gb_id) 
+		VALUES (#{gb_writer}, #{gb_subject}, #{gb_pw}, #{gb_content}, #{gb_email}, #{gb_filename}, NOW(), #{gb_id})
+	</insert>
+</mapper>

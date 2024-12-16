@@ -32,6 +32,9 @@
             <if test="sns_email_kakao != null">
             sns_email_kakao, 
             </if>
+            <if test="sns_email_google != null">
+            sns_email_google, 
+            </if>
             sns_provider,
             m_reg)
         VALUES (
@@ -49,7 +52,9 @@
             <if test="sns_email_kakao != null">
             #{sns_email_kakao}, 
             </if>
-            
+            <if test="sns_email_google != null">
+            #{sns_email_google}, 
+            </if>
             #{sns_provider}, 
             NOW())
 	</insert>
@@ -60,6 +65,8 @@
             (sns_provider = 'kakao'and sns_email_kakao = #{sns_email_kakao})
         OR  
             (sns_provider = 'naver'and sns_email_naver = #{sns_email_naver})
+        OR  
+            (sns_provider = 'google'and sns_email_google = #{sns_email_google})
         )
     </select>
 </mapper>

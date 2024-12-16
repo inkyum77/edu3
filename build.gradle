@@ -53,8 +53,12 @@ dependencies {
 
 		// 소셜 로그인 처리
 		implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+		implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+
+		compile 'com.google.api-client:google-api-client:1.32.1'
 
 }
+
 
 tasks.named('test') {
 	useJUnitPlatform()

@@ -42,6 +42,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
           String uri = request.getRequestURI();
           String id = "";
           String provider = "";
+          System.out.println(oAuth2User);
 
           //id 는 provider마다 받는 방식이 달라서 if 문 안에 작성
             //카카오
@@ -57,7 +58,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             //구글
             } else if (uri.contains("google")) {
               provider = "google";
-              id = oAuth2User.getAttribute("sub");
+              id = oAuth2User.getAttribute("id");
 
             } else {
               provider = "unknown";

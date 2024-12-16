@@ -37,7 +37,7 @@ public class AuthAPIController {
     String username = request.get("username");
     System.out.println("username" + username);
 
-    // 더 많은 정보를 추가할 수 있다.
+    // 더 많은 정보를 추가할 수 있다. 
     Map<String, Object> claims = new HashMap<>();
     claims.put("role", "USER");
 

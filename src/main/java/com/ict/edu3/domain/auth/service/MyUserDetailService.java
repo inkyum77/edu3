@@ -44,37 +44,35 @@ public class MyUserDetailService implements UserDetailsService{
     String email = oAuth2User.getAttribute("email");
     String name = oAuth2User.getAttribute("name");
 
+    String id = oAuth2User.getAttribute("id");
     System.out.println("provider : " + provider);
-    String id = "";
 
     MembersVO mvo = new MembersVO();
     if (provider.equals("kakao")) {
-        // 카카오는 id가 Long 타입으로 반환되므로 이를 String으로 변환
-        Long kakaoID = oAuth2User.getAttribute("id"); // Long 타입으로 가져옴
-        id = kakaoID.toString();  // Long을 String으로 변환
+        //카카오 ID는 Long 타입
         mvo.setSns_email_kakao(email);
         mvo.setM_name(name);
         mvo.setM_id(id);
         mvo.setSns_provider("kakao");
     } else if (provider.equals("naver")) {
         // 네이버 ID는 String 타입으로 반환됨
-        id = oAuth2User.getAttribute("id");
         mvo.setSns_email_naver(email);
         mvo.setM_name(name);
         mvo.setM_id(id);
         mvo.setSns_provider("naver");
     } else if (provider.equals("google")) {
-      // google
-        id = oAuth2User.getAttribute("id");
-        mvo.setSns_email_naver(email);
+      // google ID 는 sub로 받지만 CustomerOAuth2UserService에서 {id : getAttribute("sub")}로 이미 받음
+        mvo.setSns_email_google(email);
         mvo.setM_name(name);
         mvo.setM_id(id);
-        mvo.setSns_provider("naver");
+        mvo.setSns_provider("google");
     }
 
     // 아이디가 존재하면 DB에 있는 것, 아니면 DB에 없는 것
     MembersVO mvo2 = membersMapper.findUserByProvider(mvo);
-    System.out.println("id: " + mvo.getM_id());
+
+    System.out.println("mvo : " + mvo);
+    System.out.println("mvo2 : " + mvo2);
     if(mvo2 == null){
       membersMapper.insertUser(mvo);
     }

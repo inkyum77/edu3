@@ -48,7 +48,8 @@ public class CustomerOAuth2UserService extends DefaultOAuth2UserService{
       return new DefaultOAuth2User(oAuth2User.getAuthorities(), Map.of(
         "email", email,
         "name", name,
-        "id", attributes.get("id")
+        //카카오 id는 Long이므로 toString해준다.
+        "id", attributes.get("id").toString()
       ), "email");
       
 
@@ -67,8 +68,11 @@ public class CustomerOAuth2UserService extends DefaultOAuth2UserService{
       // 필요한 정보를 사용하여 사용자 객체를 생성하거나 반환
       return new DefaultOAuth2User(oAuth2User.getAuthorities(), Map.of(
         "email", email,
+        "phone", phone,
         "name", name,
         "id", response.get("id")), "email");
+
+    // 구글에서 가져오기
     } else if(provider.equals("google")) {
       // Google 사용자 정보는 oAuth2User.getAttributes()에서 바로 가져올 수 있습니다.
       Map<String, Object> attributes1 = oAuth2User.getAttributes();
@@ -83,7 +87,8 @@ public class CustomerOAuth2UserService extends DefaultOAuth2UserService{
           Map.of(
               "email", email,
               "name", name,
-              "picture", picture // 추가 정보 저장 가능
+              "picture", picture, // 추가 정보 저장 가능
+              "id", attributes1.get("sub")
           ),
           "email" // 주로 사용자 정보를 식별할 Key 설정
       );

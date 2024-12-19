@@ -1,6 +1,7 @@
 package com.ict.edu3.common.util;
 
 import java.nio.charset.StandardCharsets;
+import java.security.SignatureException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,9 +13,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import com.nimbusds.jwt.JWT;
+
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 
 @Component
@@ -49,8 +56,9 @@ public class JwtUtil {
   }
 
   private Claims extractAllClaims(String token) {
+    SecretKey key = Keys.hmacShaKeyFor(java.util.Base64.getDecoder().decode(secret));
     return Jwts.parserBuilder()
-                .setSigningKey(getKey())
+                .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -81,6 +89,51 @@ public class JwtUtil {
   public Date extractExpiration(String token){
     return extractClaim(token, Claims::getExpiration);
   }
+
+
+  // 토큰 검증
+  public boolean validateToken(String token) {
+    try {
+        Jwts.parserBuilder()
+            .setSigningKey(Keys.hmacShaKeyFor(secret.getBytes()))
+            .build()
+            .parseClaimsJws(token);
+        return true;
+    } catch (JwtException e) {
+        return false;
+    }
+  }
+
+  //여기서 오류 났었음
+  // 토큰에서 사용자 ID 추출
+public String getUserIdFromToken(String token) {
+    try {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8)))
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        
+        // 토큰이 유효하다면, 사용자 ID를 반환
+        return claims.getSubject();
+    } catch (ExpiredJwtException e) {
+        throw new RuntimeException("토큰이 만료되었습니다.");
+    } catch (UnsupportedJwtException e) {
+        throw new RuntimeException("지원되지 않는 토큰 형식입니다.");
+    } catch (MalformedJwtException e) {
+        throw new RuntimeException("잘못된 토큰입니다.");
+    } catch (JwtException e) {
+        throw new RuntimeException("유효하지 않은 토큰입니다.");
+    }
+}
+
+// public String getUserIdFromToken(String token) {
+//   Claims claims = Jwts.parser()
+//           .setSigningKey(secret)
+//           .parseClaimsJws(token)
+//           .getBody();
+//   return claims.getSubject();
+// } d오류류
 
   // 클레임 이름 추출
   // 클레임에서 특정 데이터 추출

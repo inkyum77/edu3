@@ -2,6 +2,7 @@ package com.ict.edu3.domain.auth.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -77,5 +78,19 @@ public class MyUserDetailService implements UserDetailsService{
       membersMapper.insertUser(mvo);
     }
     return new User(mvo.getM_id(), "", Collections.emptyList()); // 빈 리스트로 권한 설정
+  }
+
+  public UserVO getUserProfile(String userId) {
+    // userId로 사용자 정보를 조회하여 반환
+    UserVO user = membersMapper.getUserById(userId);
+    if (user != null) {
+        UserVO uvo = new UserVO();
+        uvo.setM_id(user.getM_id());
+        uvo.setName(user.getName());
+        uvo.setEmail(user.getEmail());
+        // 더 필요한 필드들을 설정
+        return uvo;
+    }
+    return null;
   }
 }

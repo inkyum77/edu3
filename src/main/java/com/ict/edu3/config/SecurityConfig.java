@@ -59,7 +59,7 @@ public class SecurityConfig {
                       // 특정 URL에 인증없이 허용
                       .requestMatchers("/api/members/join", "/api/members/login", "/api/members/idCheck",
                               "/api/guestbook/list", "/api/guestbook/detail/**", "/api/guestbook/download/**", "api/guestbook/write", 
-                              "/api/signup/sendVerificationEmail", "/api/signup/verifyEmail")
+                              "/api/signup/sendVerificationEmail", "/api/signup/verifyEmail", "/api/sms/**", "api/members/profile")
                       .permitAll()
                       // 나머지는 인증 필요
                       .anyRequest().authenticated())
@@ -69,7 +69,7 @@ public class SecurityConfig {
               // userInfoEndpoint = 인증 과정에서 인증된 사용자에 대한 정보를 제공하는 API 엔드포인트이다.
               // 사용자 정보를 가져오는 역할을 한다.
               .oauth2Login(oauth2 -> oauth2
-                .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService()))  //사용자 정보를 OAuth2 서버에서 가져오는 데 사용됩니다.
+                .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService()))  //사용자 정보를 OAuth2 서버에서 가져오는 데 사용됩니다.(CustomOAuth2UserService.loadUser 실행)
                 .successHandler(oAuth2AuthenticationSuccessHandler()))                    //사용자가 성공적으로 로그인한 후의 처리 로직을 작성합니다.
               .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -106,7 +106,7 @@ public class SecurityConfig {
   }
 
 
-  //@@@@@@???????
+  //소셜 로그인 성공 시 실행
   @Bean
   OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler() {
       return new OAuth2AuthenticationSuccessHandler(jwtUtil, userDetailService);

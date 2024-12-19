@@ -39,6 +39,8 @@ public class CustomerOAuth2UserService extends DefaultOAuth2UserService{
       //더 많은 내용을 받으려면 더 깊숙히 들어가야한다.(이름)
       Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
 
+      System.out.println("카카오 정보 : " + kakaoAccount);
+
       if(properties == null){
         throw new OAuth2AuthenticationException("Kakao error");
       }
@@ -75,11 +77,13 @@ public class CustomerOAuth2UserService extends DefaultOAuth2UserService{
     // 구글에서 가져오기
     } else if(provider.equals("google")) {
       // Google 사용자 정보는 oAuth2User.getAttributes()에서 바로 가져올 수 있습니다.
-      Map<String, Object> attributes1 = oAuth2User.getAttributes();
+      Map<String, Object> googleAccount = oAuth2User.getAttributes();
   
-      String name = (String) attributes1.get("name");
-      String email = (String) attributes1.get("email");
-      String picture = (String) attributes1.get("picture"); // 프로필 사진 URL
+      String name = (String) googleAccount.get("name");
+      String email = (String) googleAccount.get("email");
+      String picture = (String) googleAccount.get("picture"); // 프로필 사진 URL
+
+      System.out.println("구글 정보 : " + googleAccount);
   
       // 필요한 정보를 사용하여 사용자 객체를 생성하거나 반환
       return new DefaultOAuth2User(
@@ -88,7 +92,7 @@ public class CustomerOAuth2UserService extends DefaultOAuth2UserService{
               "email", email,
               "name", name,
               "picture", picture, // 추가 정보 저장 가능
-              "id", attributes1.get("sub")
+              "id", googleAccount.get("sub")
           ),
           "email" // 주로 사용자 정보를 식별할 Key 설정
       );

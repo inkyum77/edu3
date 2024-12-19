@@ -18,7 +18,6 @@ spring:
             scope:
               - email
               - profile
-
           kakao:
             client-id: e07bb4b8d5b0f2531b6c6721df5ac8eb #본인 RestAPI 키
             client-secret: AAv7JC8SEeWvi2O25iERwjW6LX3xNvkL #본인 secret 키
@@ -55,6 +54,7 @@ spring:
             token-uri: https://oauth2.googleapis.com/token
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
             user-name-attribute: sub
+  #이메일 인증
   mail:
     host: smtp.naver.com
     port: 587
@@ -85,7 +85,11 @@ spring:
       static-locations: file:D:/upload
       # static-locations: classpath:/static/
 
-
+# twilio 문자 인증
+twilio:
+  account-sid: ACd5f9a1f5ac6f9db9d9afe2a7cb046c1b
+  auth-token: eec9092f8d0517db12ce786958e5405a
+  phone-number: +12184344815
 
 server:
   port: 8080
@@ -99,7 +103,7 @@ mybatis:
 
 #비밀키 사용(32byte)
 jwt:
-  secret: "ab1CdEFg5fyjkLmNOpqrsTuvW8xYz123"
+  secret: "ab1CdEFg5fyjkLmNOpqrsTuvW8xYz123vsdvasdsdca"
   expiration: 3600000
 
 
@@ -107,3 +111,4 @@ jwt:
 logging:
   level:
     org.springframework.mail: DEBUG
+    

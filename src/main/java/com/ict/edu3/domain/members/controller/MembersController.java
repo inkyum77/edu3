@@ -4,16 +4,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ict.edu3.common.util.JwtUtil;
+import com.ict.edu3.domain.auth.service.MyUserDetailService;
 import com.ict.edu3.domain.auth.vo.DataVO;
 import com.ict.edu3.domain.auth.vo.MembersVO;
+import com.ict.edu3.domain.auth.vo.UserVO;
+import com.ict.edu3.domain.members.service.MembersService;
 import com.ict.edu3.domain.members.service.MembersServiceImpl;
 
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -25,11 +32,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class MembersController {
 
   @Autowired
-  private MembersServiceImpl service;
+  private MembersService service;
   @Autowired
   private JwtUtil jwtUtil;
   @Autowired
   private PasswordEncoder passwordEncoder;
+  @Autowired
+  private MyUserDetailService myUserDetailService;
 
   @PostMapping("/join")
   public DataVO membersJoin(@RequestBody MembersVO mvo){
@@ -63,13 +72,14 @@ public class MembersController {
       dataVO.setSuccess(false);
       dataVO.setMessage("회원가입 실패");
     }
-
+    
     log.info("encoded password : " + mvo.getM_pw());
     log.info(mvo + "\n");
     return dataVO;
   }
 
   
+  // 일반 로그인
   @PostMapping("/login")
   public DataVO memberLogin(@RequestBody MembersVO mvo) {
       DataVO dataVO = new DataVO();
@@ -86,8 +96,6 @@ public class MembersController {
           return dataVO;
         }
         
-        System.err.println(mvo.getM_pw());
-        System.err.println(membersVO.getM_pw());
         // 비밀번호 검증 받기
         if(!passwordEncoder.matches(mvo.getM_pw(), membersVO.getM_pw())){
           dataVO.setSuccess(false);
@@ -96,7 +104,6 @@ public class MembersController {
         }
 
         // JWT 토큰 생성 및 전송
-        System.out.println(mvo.getM_id());
         String token = jwtUtil.generateToken(mvo.getM_id());
 
         // SecurityContext에 인증 객체 설정
@@ -125,7 +132,7 @@ public class MembersController {
       }
     }
 
-    @GetMapping(value = "/idCheck", produces = "application/json")
+  @GetMapping(value = "/idCheck", produces = "application/json")
   public DataVO getIdCheck(@RequestParam("m_id") String m_id) {
     System.out.println(m_id);
     DataVO dataVO = new DataVO();
@@ -142,4 +149,51 @@ public class MembersController {
     return dataVO;
   }
 
+  public MembersController(JwtUtil jwtUtil, MyUserDetailService myUserDetailService) {
+    this.jwtUtil = jwtUtil;
+    this.myUserDetailService = myUserDetailService;
+}
+  @GetMapping("/profile")
+  public ResponseEntity<DataVO> getUserProfile(@RequestHeader("Authorization") String authorizationHeader) {
+      DataVO dataVO = new DataVO();
+
+      try {
+          // 토큰 추출
+          String token = authorizationHeader.replace("Bearer ", "");
+          System.out.println("토큰 : " + token);
+
+          // 토큰 검증
+          if (!jwtUtil.validateToken(token)) {
+              dataVO.setSuccess(false);
+              dataVO.setMessage("유효하지 않은 토큰입니다.");
+              return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(dataVO);
+          }
+
+          // 사용자 ID 추출
+          String userId = jwtUtil.getUserIdFromToken(token);
+          System.out.println("유저 아이디: "+  userId);
+
+          // 사용자 정보 조회
+          UserVO userProfile = myUserDetailService.getUserDetail(userId);
+          System.out.println(userProfile);
+
+          if (userProfile != null) {
+              dataVO.setSuccess(true);
+              dataVO.setData(userProfile);
+              dataVO.setMessage("성공");
+              return ResponseEntity.ok(dataVO);
+          } else {
+              dataVO.setSuccess(false);
+              dataVO.setMessage("사용자 정보를 찾을 수 없습니다.");
+              return ResponseEntity.status(HttpStatus.NOT_FOUND).body(dataVO);
+          }
+
+      } catch (Exception e) {
+          // logger.error("Server error: ", e);
+          dataVO.setSuccess(false);
+          dataVO.setMessage("서버에서 오류가 발생했습니다.");
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(dataVO);
+      }
+  }
+  
 }

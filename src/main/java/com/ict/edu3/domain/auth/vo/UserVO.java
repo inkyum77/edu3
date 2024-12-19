@@ -19,6 +19,7 @@ public class UserVO implements UserDetails{
   private String phone="";
   private String name="";
 
+  private String sns_id = "";
   private String provider="";
   private String kakao="";
   private String naver="";

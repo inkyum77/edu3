@@ -79,7 +79,7 @@ public class MembersController {
   }
 
   
-  // 일반 로그인
+  // 일반 로그인 처리
   @PostMapping("/login")
   public DataVO memberLogin(@RequestBody MembersVO mvo) {
       DataVO dataVO = new DataVO();
@@ -118,6 +118,8 @@ public class MembersController {
         // membersVO.getM_id(), null, null); // 권한 정보 추가 가능
         // SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         // log.info("로그인 성공, SecurityContext에 인증 객체 설정 완료");
+        System.out.println("클라이언트로 보내는 member 정보");
+        System.out.println(membersVO);
 
         dataVO.setData(membersVO);
         dataVO.setSuccess(true);
@@ -132,6 +134,7 @@ public class MembersController {
       }
     }
 
+    
   @GetMapping(value = "/idCheck", produces = "application/json")
   public DataVO getIdCheck(@RequestParam("m_id") String m_id) {
     System.out.println(m_id);

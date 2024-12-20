@@ -17,13 +17,13 @@ public class UserVO implements UserDetails{
   private String m_pw="";
   private String email="";
   private String phone="";
-  private String name="";
+  private String m_name="";
 
   private String sns_id = "";
   private String provider="";
-  private String kakao="";
-  private String naver="";
-  private String google="";
+  private String sns_email_kakao="";
+  private String sns_email_naver="";
+  private String sns_email_google="";
 
   private List<GrantedAuthority> authorities = new ArrayList<>();
 
@@ -39,7 +39,7 @@ public class UserVO implements UserDetails{
 
   @Override
   public String getUsername() {
-    return this.name;
+    return this.m_name;
   }
 
 }
